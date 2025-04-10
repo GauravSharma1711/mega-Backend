@@ -1,10 +1,10 @@
 import  Mailgen from 'mailgen'
 import   nodemailer  from 'nodemailer'
 
- const sendMail = async (options)=>{
+ export const sendMail = async (options)=>{
    
     const mailGenerator = new Mailgen({
-        theme: 'Task Manager',
+        theme: 'default',
         product: {
            
             name: 'Mailgen',
@@ -49,7 +49,7 @@ const mail = {
 
 
 
- const emailVerificationMailGenerator = (username,verificationUrl)=>{
+ export const emailVerificationMailGenerator = (username,verificationUrl)=>{
 
     return {
         body: {
@@ -73,7 +73,7 @@ const mail = {
 
 
  
- const forgotPasswordMailGenerator = (username,passwordResetUrl)=>{
+ export const forgotPasswordMailGenerator = (username,passwordResetUrl)=>{
 
     return {
         body: {

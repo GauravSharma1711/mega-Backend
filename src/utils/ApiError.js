@@ -21,4 +21,4 @@ if(stack) {
     }
 }
 
-export {ApiError}
+export default ApiError

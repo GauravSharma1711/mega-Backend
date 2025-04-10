@@ -15,8 +15,8 @@ const userRegistrationValidator = () => {
        .isLength({max:13}).withMessage("max length should be 13"),
 
        body("password")
-       .isLength({min:6}).withMessage("password length should be minimum 6")
        .notEmpty().withMessage("Password is required")
+       .isLength({min:6}).withMessage("password length should be minimum 6")
     ]
 }
 
@@ -26,12 +26,11 @@ const userLoginValidator = ()=>{
 return [
 
 body("email")
-.trim()
-.isEmpty().withMessage("Email is required")
+.notEmpty().withMessage("Email is required")
 .isEmail().withMessage("Email is invalid"),
 
 body("password")
-.length({min:6}).withMessage("Password length should be minimum of 6 ")
+.isLength({min:6}).withMessage("Password length should be minimum of 6 ")
 
 
 
