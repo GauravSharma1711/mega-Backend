@@ -38,5 +38,39 @@ body("password")
 
    }
 
+   const forgotPasswordValidator = ()=>{
+    return [
 
-export {userRegistrationValidator,userLoginValidator}
+        body("email")
+        .notEmpty().withMessage("Email is required")
+        .isEmail().withMessage("Email is invalid"),
+    ]        
+   }
+
+   const resetPasswordValidator = ()=>{
+    return [
+
+        body("password")
+        .isLength({min:6}).withMessage("Password length should be minimum of 6 ")
+    
+    ]        
+   }
+
+   const changePasswordValidator = (()=>{
+    
+    return [
+
+  body('oldPassword')
+  .notEmpty().withMessage('Old password is required'),
+
+  body('newPassword')
+  .isLength({ min: 6 }).withMessage('New password must be at least 8 characters long')
+ 
+    ]
+   })
+
+
+
+export {userRegistrationValidator,userLoginValidator,forgotPasswordValidator,
+    resetPasswordValidator,changePasswordValidator
+}

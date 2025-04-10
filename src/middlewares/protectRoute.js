@@ -1,10 +1,10 @@
- import jwt from 'jsonwebtoken'
-import ApiError from './ApiError.js';
-import asyncHandler from './async-handler.js';
+import jwt from 'jsonwebtoken'
+import ApiError from '../utils/ApiError.js';
+import asyncHandler from '../utils/async-handler.js';
  
  const protectRoute = asyncHandler((req,res,next)=>{
         
-    const {accessToken,refreshToken} = req.cookies;
+    const {accessToken} = req.cookies;
 
     if (!accessToken) {
         throw new ApiError(401, "Access token missing");
@@ -20,7 +20,7 @@ import asyncHandler from './async-handler.js';
         id: decoded._id,
         email: decoded.email,    
       }
-      req.user=refreshToken;
+     
       
 
       next();

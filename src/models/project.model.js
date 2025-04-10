@@ -8,18 +8,21 @@ const projectSchema = new Schema({
         unique:true,
         trim:true
     },
+
     description:{
-type:String
+    type:String
     },
+
     createdBy:{
-type:Schema.Types.ObjectId,
-ref:"User",
-required:true
-    }
+        type:Schema.Types.ObjectId,
+          ref:"User",
+             required:true
+       }
 
 
 },{timestamps:true})
 
 
-export const Project = new mongoose.model("Project",projectSchema);
+ const Project =  mongoose.model("Project",projectSchema);
+ export default Project
 
