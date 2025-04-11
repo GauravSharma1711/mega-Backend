@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser'
 import authRoute from './routes/auth.routes.js'
 import healthCheckRouter from './routes/healthcheck.routes.js';
 import projectRoute from './routes/project.route.js'
+import noteRoute from './routes/note.route.js'
 
 const app = express();
 
@@ -20,5 +21,5 @@ app.use('/api/v1/health', healthCheckRouter);
 app.use('/api/v1/auth',authRoute);
 app.use('/api/v1/project',projectRoute);
 
-
+app.use('/api/v1/note',noteRoute);
 export default app;
