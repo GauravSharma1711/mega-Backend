@@ -2,46 +2,229 @@ import Task from '../models/task.model.js'
 import asyncHandler from "../utils/async-handler.js";
 import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
+import Project from '../models/project.model.js';
+import { SubTask } from '../models/subtask.model.js';
 
 
 
-const getTasks = async (req, res) => {
-    // get all tasks
-  };
+const getTasks = asyncHandler(async (req, res) => {
+   
+  const curLoggedInUser  = req.user.id
+
+  const myTasks = await Task.find({
+    assignedBy:curLoggedInUser
+  })
+
+  if(!myTasks){
+    throw new ApiError(400,"you dont have any task");
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200,{message:"got all tasks",myTasks})
+  )
+
+  });
   
-  // get task by id
-  const getTaskById = async (req, res) => {
-    // get task by id
-  };
+
+  const getTaskById = asyncHandler(async (req, res) => {
+    const taskId = req.params.taskId;
+
+    const curLoggedInUser  = req.user.id;
+
+    const task = await Task.findById(taskId);
+    if(!task){
+      throw new ApiError(404,"task not found");
+    }
+
+    if(task.assignedBy.toString()!==curLoggedInUser.tostring()){
+      throw new ApiError(403,"not authorized to get task");
+    }
+
+    return res.status(200).json(
+      new ApiResponse(200,{message:"got task by id",task})
+    )
+  });
   
-  // create task
-  const createTask = async (req, res) => {
-    // create task
-  };
   
-  // update task
-  const updateTask = async (req, res) => {
-    // update task
-  };
+  const createTask = asyncHandler(async(req, res) => {
+    
+    const {title,description,attachments}  = req.body;
+
+    const {projectId,assignedTo} = req.params;
+
+    const assignedBy  = req.user.id;
+
+    const project = await Project.findById(projectId);
+    if(!project){
+      throw new ApiError(404,"Project not found")
+    }
+
+    if(project.createdBy.toString()!==assignedBy.toString()){
+      throw new ApiError(403,"Not authorized to assign task");
+    }
+
+    const task = new Task({
+      title,
+      description,
+      attachments,
+      assignedTo,
+      assignedBy,
+      projectId
+      })
+
+      await task.save();
+
+      return res.status(200).json(
+        new ApiResponse(200,{message:"task created successfully",task})
+      )
+
+
+
+  });
   
-  // delete task
-  const deleteTask = async (req, res) => {
-    // delete task
-  };
   
-  // create subtask
+  const updateTask = asyncHandler(async(req, res) => {
+    const {title,description,attachments}  = req.body;
+      const taskId = req.params.taskId;
+
+      const curLoggedInUser  = req.user.id;
+
+      const task = await Task.findById(taskId);
+      if(!task){
+        throw new ApiError(404,"task not found");
+      }
+
+      if(task.assignedBy.toString()!==curLoggedInUser.tostring()){
+        throw new ApiError(403,"not authorized to update task");
+      }
+
+      task.title = title;
+      task.description = description;
+      task.attachments = attachments;
+
+      await task.save();
+
+
+      return res.status(200).json(
+        new ApiResponse(200,{message:"task updated successfully",task})
+      )
+
+
+        
+
+
+
+  });
+  
+ 
+  const deleteTask = asyncHandler(async (req, res) => {
+
+    const taskId = req.params.taskId;
+
+    const curLoggedInUser  = req.user.id;
+
+    const task = await Task.findById(taskId);
+    if(!task){
+      throw new ApiError(404,"task not found");
+    }
+
+    if(task.assignedBy.toString()!==curLoggedInUser.tostring()){
+      throw new ApiError(403,"not authorized to delete task");
+    }
+
+    await Task.findByIdAndDelete({_id:taskId});
+    
+    return res.status(200).json(
+      new ApiResponse(200,{message:"task delted successfully",task})
+    )
+
+  });
+  
+ 
   const createSubTask = async (req, res) => {
-    // create subtask
+     const taskId =  req.params.taskId;
+
+     const curLoggedInUser = req.user.id;
+
+     const {title} = req.body;
+
+     const task = await Task.findById(taskId);
+     if(!task){
+      throw new ApiError(404,"task not found");
+     }
+
+     if(task.assignedBy.toString()!==curLoggedInUser.toString()){
+      throw new ApiError(403,"not authorized to create subtask");
+     }
+
+     const subTask = new SubTask({
+      title,
+      task:taskId,
+      createdBy:curLoggedInUser
+     })
+
+     await SubTask.save();
+
+     return res.status(200).json(
+      new ApiResponse(200,{message:"Subtask created successfully",subTask})
+    )
+
+
+
   };
   
-  // update subtask
-  const updateSubTask = async (req, res) => {
-    // update subtask
-  };
+  const updateSubTask = asyncHandler(async (req, res) => {
+    const subtaskId =  req.params.subtaskId;
+
+    const curLoggedInUser = req.user.id;
+
+    const {title,isCompleted} = req.body;
+
+    const subtask = await Task.findById(subtaskId);
+    if(!subtask){
+     throw new ApiError(404,"subtask not found");
+    }
+
+    if(subtask.createdBy.toString()!==curLoggedInUser.toString()){
+     throw new ApiError(403,"not authorized to update subtask");
+    }
+
+    subtask.title=title;
+    subtask.isCompleted=isCompleted;
+
+    await subtask.save();
+
+
+  return res.status(200).json(
+      new ApiResponse(200,{message:"Subtask updated successfully",task})
+    )
+
+
+  });
   
-  // delete subtask
+ 
   const deleteSubTask = async (req, res) => {
-    // delete subtask
+    const subtaskId =  req.params.subtaskId;
+
+    const curLoggedInUser = req.user.id;
+
+ 
+
+    const subtask = await Task.findById(subtaskId);
+    if(!subtask){
+     throw new ApiError(404,"subtask not found");
+    }
+
+    if(subtask.createdBy.toString()!==curLoggedInUser.toString()){
+     throw new ApiError(403,"not authorized to delete subtask");
+    }
+
+    await SubTask.findByIdAndDelete({_id:subtaskId});
+
+    return res.status(200).json(
+      new ApiResponse(200,{message:"Subtask delete successfully",task})
+    )
+
   };
   
   export {
