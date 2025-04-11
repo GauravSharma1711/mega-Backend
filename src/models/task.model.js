@@ -31,6 +31,7 @@ status:{
     enum:AvailableTaskStatus,
     default:TaskStatusEnum.TODO,
 },
+
 attachments:{
     type:[
         {
@@ -50,6 +51,7 @@ attachments:{
 },{timestamps:true})
 
 
-export const Task= new mongoose.model("Task",taskSchema);
+ const Task= mongoose.model("Task",taskSchema);
+ export default Task;
 
 
