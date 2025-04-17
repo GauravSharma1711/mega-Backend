@@ -289,29 +289,29 @@ const changePassword = asyncHandler(async(req,res)=>{
 const resendVerificationEmail = asyncHandler(async (req, res) => {
     const userId = req.user._id;
 
-    // Fetch the user from the database
+  
     const user = await User.findById(userId);
     if (!user) {
         throw new ApiError(404, "User not found");
     }
 
-    // Check if the user's email is already verified
+  
     if (user.isEmailVerified) {
         return res.status(400).json({ message: "Email is already verified." });
     }
 
-    // Generate a new verification token
+    
     const { unhashedToken, hashedToken, tokenExpiry } = user.generateTemporaryToken();
     const verificationUrl = `http://localhost:8000/api/v1/auth/verify/${unhashedToken}`;
 
-    // Update user with new token and expiry
+ 
     user.emailVerificationToken = hashedToken;
     user.emailVerificationExpiry = tokenExpiry;
 
-    // Save the updated user information
+   
     await user.save();
 
-    // Send the verification email
+    
     sendMail({
         email: user.email,
         subject: "Verify Your Email Account",

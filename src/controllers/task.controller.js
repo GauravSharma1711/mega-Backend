@@ -4,8 +4,8 @@ import ApiError from "../utils/ApiError.js";
 import ApiResponse from "../utils/ApiResponse.js";
 import Project from '../models/project.model.js';
 import { SubTask } from '../models/subtask.model.js';
-
-
+import {uploadOnCloudinary} from '../utils/cloudinary.js'
+ 
 
 const getTasks = asyncHandler(async (req, res) => {
    
@@ -48,7 +48,7 @@ const getTasks = asyncHandler(async (req, res) => {
   
   const createTask = asyncHandler(async(req, res) => {
     
-    const {title,description,attachments}  = req.body;
+    const {title,description}  = req.body;
 
     const {projectId,assignedTo} = req.params;
 
@@ -63,10 +63,23 @@ const getTasks = asyncHandler(async (req, res) => {
       throw new ApiError(403,"Not authorized to assign task");
     }
 
+   const attachmentLocalPath =  req.files?.attachments[0]?.path;
+
+   if(!attachmentLocalPath){
+    throw new ApiError(400,"attachment is required")
+   }
+ const attachment  =    await uploadOnCloudinary(attachmentLocalPath);
+   
+ if(!attachment){
+  throw new ApiError(400,"attachment is required")
+ }
+
+
+
     const task = new Task({
       title,
       description,
-      attachments,
+      attachment:attachment.url,
       assignedTo,
       assignedBy,
       projectId
@@ -84,7 +97,7 @@ const getTasks = asyncHandler(async (req, res) => {
   
   
   const updateTask = asyncHandler(async(req, res) => {
-    const {title,description,attachments}  = req.body;
+    const {title,description}  = req.body;
       const taskId = req.params.taskId;
 
       const curLoggedInUser  = req.user.id;
@@ -98,9 +111,20 @@ const getTasks = asyncHandler(async (req, res) => {
         throw new ApiError(403,"not authorized to update task");
       }
 
+      const attachmentLocalPath =  req.files?.attachments[0]?.path;
+
+   if(!attachmentLocalPath){
+    throw new ApiError(400,"attachment is required")
+   }
+ const attachment  =    await uploadOnCloudinary(attachmentLocalPath);
+   
+ if(!attachment){
+  throw new ApiError(400,"attachment is required")
+ }
+
       task.title = title;
       task.description = description;
-      task.attachments = attachments;
+      task.attachments = attachment;
 
       await task.save();
 
@@ -141,7 +165,7 @@ const getTasks = asyncHandler(async (req, res) => {
   });
   
  
-  const createSubTask = async (req, res) => {
+  const createSubTask = asyncHandler(async (req, res) => {
      const taskId =  req.params.taskId;
 
      const curLoggedInUser = req.user.id;
@@ -171,7 +195,7 @@ const getTasks = asyncHandler(async (req, res) => {
 
 
 
-  };
+  });
   
   const updateSubTask = asyncHandler(async (req, res) => {
     const subtaskId =  req.params.subtaskId;
@@ -203,7 +227,7 @@ const getTasks = asyncHandler(async (req, res) => {
   });
   
  
-  const deleteSubTask = async (req, res) => {
+  const deleteSubTask = asyncHandler(async (req, res) => {
     const subtaskId =  req.params.subtaskId;
 
     const curLoggedInUser = req.user.id;
@@ -225,7 +249,7 @@ const getTasks = asyncHandler(async (req, res) => {
       new ApiResponse(200,{message:"Subtask delete successfully",task})
     )
 
-  };
+  });
   
   export {
     createSubTask,

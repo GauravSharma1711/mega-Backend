@@ -5,7 +5,7 @@ import ApiResponse from "../utils/ApiResponse.js";
 import ProjectNote  from "../models/projectNote.model.js"
 import Project from '../models/project.model.js'
 
-const getNotes = async (req, res) => {
+const getNotes =  asyncHandler(async (req, res) => {
     // get all notes
     const curLoggedInUser = req.user.id;
     const projectId = req.params.projectId;
@@ -23,9 +23,9 @@ const getNotes = async (req, res) => {
     )
 
 
-  };
+  });
   
-  const getNoteById = async (req, res) => {
+  const getNoteById = asyncHandler(async (req, res) => {
     // get note by id
     const noteId = req.params.noteId;
     const curLoggedInUser = req.user.id;
@@ -44,9 +44,9 @@ const getNotes = async (req, res) => {
         new ApiResponse(200,{message:"got all note successfully",note})
     )
 
-  };
+  });
   
-  const createNote = async (req, res) => {
+  const createNote = asyncHandler(async (req, res) => {
     // create note
 
     const {content}  =req.body
@@ -74,9 +74,9 @@ const projectId  = req.params.projectId;
         new ApiResponse(200,{message:"note created successfully",note})
     )
 
-  };
+  });
   
-  const updateNote = async (req, res) => {
+  const updateNote = asyncHandler(async (req, res) => {
     // update note
 
     const {content} = req.body;
@@ -103,9 +103,9 @@ const projectId  = req.params.projectId;
     )
 
 
-  };
+  });
   
-  const deleteNote = async (req, res) => {
+  const deleteNote = asyncHandler(async (req, res) => {
     // delete note
 
     const noteId = req.params.noteId;
@@ -127,7 +127,7 @@ const projectId  = req.params.projectId;
         new ApiResponse(200,{message:"note delted successfully"})
     )
 
-  };
+  });
   
   export { createNote, deleteNote, getNoteById, getNotes, updateNote };
   
